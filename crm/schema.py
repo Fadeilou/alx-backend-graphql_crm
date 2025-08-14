@@ -64,6 +64,9 @@ class Query(graphene.ObjectType):
     customer_by_id = graphene.Field(CustomerType, customer_id=graphene.ID(required=True))
     product_by_id = graphene.Field(ProductType, product_id=graphene.ID(required=True))
     order_by_id = graphene.Field(OrderType, order_id=graphene.ID(required=True))
+    total_customers = graphene.Int()
+    total_orders = graphene.Int()
+    total_revenue = graphene.Decimal()
 
 
     def resolve_all_customers(root, info):
@@ -92,6 +95,15 @@ class Query(graphene.ObjectType):
         if not order:
             raise GraphQLError('Invalid Order ID')
         return order
+
+    def resolve_total_customers(root, info):
+        return Customer.objects.count()
+
+    def resolve_total_orders(root, info):
+        return Order.objects.count()
+
+    def resolve_total_revenue(root, info):
+        return sum(order.total_amount for order in Order.objects.all())
 
 
 
