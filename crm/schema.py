@@ -27,7 +27,7 @@ class OrderType(DjangoObjectType):
 
     class Meta:
         model = Order
-        fields = ('order_id', 'customer', 'products', 'total_amount')
+        fields = ('order_id', 'customer', 'products', 'total_amount', 'order_date')
 
     def resolve_total_amount(parent, info):
         return parent.total_amount
@@ -220,6 +220,28 @@ class CreateOrder(graphene.Mutation):
         return CreateOrder(order=order, message='Order created successfully')
 
 
+class UpdateLowStockProducts(graphene.Mutation):
+    class Arguments:
+        pass
+
+    updated_products = graphene.List(ProductType)
+    message = graphene.String()
+
+    @classmethod
+    def mutate(cls, root, info):
+        low_stock_products = Product.objects.filter(stock__lt=10)
+        updated_products_list = []
+        for product in low_stock_products:
+            product.stock += 10
+            product.save()
+            updated_products_list.append(product)
+
+        return UpdateLowStockProducts(
+            updated_products=updated_products_list,
+            message=f"{len(updated_products_list)} products updated successfully."
+        )
+
+
 
 
 class Mutation(graphene.ObjectType):
@@ -227,5 +249,6 @@ class Mutation(graphene.ObjectType):
     bulk_create_customer = BulkCreateCustomer.Field()
     create_product = CreateProduct.Field()
     create_order = CreateOrder.Field()
+    update_low_stock_products = UpdateLowStockProducts.Field()
 
 
