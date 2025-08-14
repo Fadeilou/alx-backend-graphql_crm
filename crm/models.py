@@ -6,7 +6,7 @@ from decimal import Decimal
 
 class Customer(models.Model):
     customer_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False, primary_key=True)
-    name = models.CharField(max_length=100, null=False, blank=False)
+    name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=15, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -18,7 +18,7 @@ class Customer(models.Model):
 
 class Product(models.Model):
     product_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False, primary_key=True)
-    name = models.CharField(max_length=100, blank=False, null=False)
+    name = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2, null=False)
     stock = models.PositiveIntegerField(null=False)
     created_at = models.DateTimeField(auto_now_add=True)
